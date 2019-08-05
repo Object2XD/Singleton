@@ -3,22 +3,46 @@ using System.Linq;
 
 namespace UnityEngine.Extension
 {
+    [Obsolete]
     /// <summary>
     /// SingletonMonoBehaviourのオプション
     /// シーン移動時に削除しないオプション
     /// </summary>
-    public interface ISingletonMonoBehaviourAutoDontDestroyOnLoad { }
+    public interface ISingletonMonoBehaviourAutoDontDestroyOnLoad : SingletonMonoBehaviour.IAutoDontDestroyOnLoad { }
+    [Obsolete]
     /// <summary>
     /// SingletonMonoBehaviourのオプション
     /// 自動的に良しなに生成してくれる
     /// </summary>
-    public interface ISingletonMonoBehaviourAutoCreate { }
+    public interface ISingletonMonoBehaviourAutoCreate : SingletonMonoBehaviour.IAutoCreate { }
+    [Obsolete]
     /// <summary>
     /// SingletonMonoBehaviourのオプション
     /// </summary>
-    public interface ISingletonMonoBehaviourAutoInitialize {
-        bool IsInitialized { get; }
-        void Initialize();
+    public interface ISingletonMonoBehaviourAutoInitialize : SingletonMonoBehaviour.IAutoInitialize { }
+
+    public sealed class SingletonMonoBehaviour
+    {
+        /// <summary>
+        /// SingletonMonoBehaviourのオプション
+        /// シーン移動時に削除しないオプション
+        /// </summary>
+        public interface IAutoDontDestroyOnLoad { }
+
+        /// <summary>
+        /// SingletonMonoBehaviourのオプション
+        /// 自動的に良しなに生成してくれる
+        /// </summary>
+        public interface IAutoCreate { }
+
+        /// <summary>
+        /// SingletonMonoBehaviourのオプション
+        /// </summary>
+        public interface IAutoInitialize
+        {
+            bool IsInitialized { get; }
+            void Initialize();
+        }
     }
 
     /// <summary>
@@ -27,6 +51,7 @@ namespace UnityEngine.Extension
     /// <typeparam name="T">このクラスを継承するオブジェクト本体</typeparam>
     public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
+
         private static Type[] _options = null;
         /// <summary>
         /// OptionInterfaceのキャシュ
@@ -60,14 +85,14 @@ namespace UnityEngine.Extension
                 if (_instance == null)
                 {
                     // 自動生成オプションが入っているか
-                    if (Options.Any(i => i == typeof(ISingletonMonoBehaviourAutoCreate)))
+                    if (Options.Any(i => i == typeof(SingletonMonoBehaviour.IAutoCreate)))
                         _instance = new GameObject(typeof(T).FullName).AddComponent<T>();
                 }
                 if(_instance != null)
                 {
-                    if(Options.Any(i => i == typeof(ISingletonMonoBehaviourAutoInitialize)))
+                    if(Options.Any(i => i == typeof(SingletonMonoBehaviour.IAutoInitialize)))
                     {
-                        ISingletonMonoBehaviourAutoInitialize initialize = (ISingletonMonoBehaviourAutoInitialize)_instance;
+                        SingletonMonoBehaviour.IAutoInitialize initialize = (SingletonMonoBehaviour.IAutoInitialize)_instance;
                         if (!initialize.IsInitialized)
                             initialize.Initialize();
                     }
@@ -85,7 +110,7 @@ namespace UnityEngine.Extension
             if (Instance == this)
             {
                 // DontDestroy Optionが入っている場合
-                if (Options.Any(i => i == typeof(ISingletonMonoBehaviourAutoDontDestroyOnLoad)))
+                if (Options.Any(i => i == typeof(SingletonMonoBehaviour.IAutoInitialize)))
                     DontDestroyOnLoad(this);
                 return;
             }
