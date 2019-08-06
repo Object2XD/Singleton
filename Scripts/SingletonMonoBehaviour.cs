@@ -49,7 +49,7 @@ namespace UnityEngine.Extension
     /// Uniqueなオブジェクトを簡単に作成
     /// </summary>
     /// <typeparam name="T">このクラスを継承するオブジェクト本体</typeparam>
-    public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+    public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : SingletonMonoBehaviour<T>
     {
 
         private static Type[] _options = null;
