@@ -90,6 +90,7 @@ namespace UnityEngine.Extension
                 }
                 if(_instance != null)
                 {
+                    _instance.SingletonInitialize();
                     if(Options.Any(i => i == typeof(SingletonMonoBehaviour.IAutoInitialize)))
                     {
                         SingletonMonoBehaviour.IAutoInitialize initialize = (SingletonMonoBehaviour.IAutoInitialize)_instance;
@@ -107,10 +108,12 @@ namespace UnityEngine.Extension
         /// </summary>
         protected virtual void SingletonInitialize()
         {
-            if (Instance == this)
+            if (_instance == null)
+                _instance = FindObjectOfType<T>();
+            if (_instance == this)
             {
                 // DontDestroy Optionが入っている場合
-                if (Options.Any(i => i == typeof(SingletonMonoBehaviour.IAutoInitialize)))
+                if (Options.Any(i => i == typeof(SingletonMonoBehaviour.IAutoDontDestroyOnLoad)))
                     DontDestroyOnLoad(this);
                 return;
             }
