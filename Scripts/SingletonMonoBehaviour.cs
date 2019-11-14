@@ -117,7 +117,7 @@ namespace UnityEngine.Extension
                     DontDestroyOnLoad(this);
                 return;
             }
-            Destroy(this);
+            Destroy(this.gameObject);
         }
 
         /// <summary>
